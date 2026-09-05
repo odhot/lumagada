@@ -1,0 +1,10 @@
+export const categories=[['🚗','Mobil','mobil'],['🏍️','Motor','motor'],['🏠','Properti','properti'],['📱','Elektronik','elektronik'],['💼','Jasa & Lowongan','jasa'],['👕','Fashion','fashion'],['🪑','Rumah & Perabot','rumah'],['🎮','Hobi & Koleksi','hobi'],['🐱','Hewan','hewan'],['📚','Buku','buku'],['🏪','Bisnis','bisnis'],['📦','Lainnya','lainnya']];
+export const listings=[
+{id:'1',title:'iPhone 15 Pro 256GB Natural Titanium',price:12500000,location:'Jakarta Selatan',category:'Elektronik',condition:'Bekas',image:'https://images.unsplash.com/photo-1696446701796-da61225697cc?auto=format&fit=crop&w=900&q=80',seller:'Raka Store',verified:true,urgent:true},
+{id:'2',title:'Honda Vario 160 ABS 2024',price:24500000,location:'Bandung',category:'Motor',condition:'Bekas',image:'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=900&q=80',seller:'Dimas',verified:true},
+{id:'3',title:'Apartemen 2BR Furnished dekat MRT',price:1850000000,location:'Jakarta Selatan',category:'Properti',condition:'Bekas',image:'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=900&q=80',seller:'Nadia Property',verified:true},
+{id:'4',title:'Gaming PC RTX 4070 + Monitor 27 inch',price:18500000,location:'Surabaya',category:'Elektronik',condition:'Bekas',image:'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=900&q=80',seller:'Fajar',verified:false},
+{id:'5',title:'Sofa Scandinavian 3 Seater',price:2800000,location:'Tangerang',category:'Rumah & Perabot',condition:'Bekas',image:'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=900&q=80',seller:'Maya Home',verified:true},
+{id:'6',title:'MacBook Air M2 8/256GB',price:13500000,location:'Jakarta Barat',category:'Elektronik',condition:'Bekas',image:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=900&q=80',seller:'Kevin',verified:true},
+];
+export const rupiah=(n:number)=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n).replace('IDR','Rp');
