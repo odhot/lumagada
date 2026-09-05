@@ -7,9 +7,9 @@ export default function Login(){
  return <main className="min-h-[70vh] flex items-center justify-center px-4 py-10"><div className="card p-7 w-full max-w-md shadow">
   <div className="text-center"><div className="text-3xl font-black text-green-600">lumagada.</div><h1 className="text-2xl font-black mt-6">{mode==='login'?'Selamat datang kembali':'Buat akun Lumagada'}</h1><p className="text-gray-500 text-sm mt-2">{mode==='login'?'Masuk untuk mengelola iklan dan favorit.':'Buat akun untuk jual, beli, chat, dan mengelola iklan.'}</p></div>
   <form className="mt-7 space-y-4" onSubmit={e=>{e.preventDefault();if(mode==='signup'&&!terms)return;location.href='/dashboard'}}>
-   {mode==='signup'&&<><div className="relative"><UserRound className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"/><input className="input pl-12" type="text" placeholder="Nama lengkap" required/></div><div className="relative"><Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"/><input className="input pl-12" type="tel" placeholder="Nomor HP" required/></div></>}
-   <div className="relative"><Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"/><input className="input pl-12" type="email" placeholder="Email" required/></div>
-   <div className="relative"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"/><input className="input pl-12" type="password" placeholder="Password" required/></div>
+   {mode==='signup'&&<><div className="field-with-icon"><UserRound className="field-icon"/><input className="input" type="text" placeholder="Nama lengkap" required/></div><div className="field-with-icon"><Phone className="field-icon"/><input className="input" type="tel" placeholder="Nomor HP" required/></div></>}
+   <div className="field-with-icon"><Mail className="field-icon"/><input className="input" type="email" placeholder="Email" required/></div>
+   <div className="field-with-icon"><Lock className="field-icon"/><input className="input" type="password" placeholder="Password" required/></div>
    {mode==='signup'&&<div className="flex items-start gap-3 rounded-xl bg-[#f6f9f7] p-3 text-xs text-gray-600"><input id="terms" type="checkbox" checked={terms} onChange={e=>setTerms(e.target.checked)} className="mt-0.5 h-4 w-4 accent-green-600" required/><label htmlFor="terms">Saya telah membaca dan menyetujui <button type="button" onClick={()=>setShowTerms(true)} className="font-bold text-green-700 underline underline-offset-2">Terms of Service & Agreement</button> Lumagada.</label></div>}
    <button disabled={mode==='signup'&&!terms} className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">{mode==='login'?'Masuk':'Daftar'}</button>
   </form>
@@ -28,5 +28,4 @@ export default function Login(){
   <section><h3 className="font-black text-gray-900">10. Tanggung Jawab Pengguna</h3><p>Pengguna bertanggung jawab atas isi iklan, komunikasi, dan transaksi yang dilakukan. Lumagada tidak menjamin kualitas, keaslian, kepemilikan, atau keamanan setiap barang dan jasa yang ditawarkan oleh pengguna.</p></section>
   <div className="rounded-xl bg-[#edf8ef] p-4 flex gap-3"><ShieldCheck className="w-5 h-5 text-green-600 shrink-0 mt-0.5"/><p className="text-xs">Dengan mencentang persetujuan saat pendaftaran, pengguna menyatakan setuju untuk terikat pada Terms of Service & Agreement ini serta aturan iklan dan kebijakan platform Lumagada.</p></div>
  </div><div className="p-4 border-t"><button type="button" onClick={()=>{setTerms(true);setShowTerms(false)}} className="btn btn-primary w-full">Saya Mengerti & Setuju</button></div></div></div>}
- </main>
-}
+ </main>}
