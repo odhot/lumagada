@@ -1,0 +1,2 @@
+import {Heart} from 'lucide-react';import {listings} from '@/lib/data';import {ListingCard} from '@/components/listing-card';
+export default function Favorites(){return <main className="container py-10"><div className="flex items-center gap-3"><Heart className="text-green-600"/><h1 className="text-3xl font-black">Favorit</h1></div><p className="text-gray-500 mt-2">Simpan iklan yang ingin dilihat lagi.</p><div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-7">{listings.slice(0,4).map(x=><ListingCard item={x} key={x.id}/>)}</div></main>}
