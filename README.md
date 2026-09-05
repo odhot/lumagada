@@ -1,30 +1,44 @@
 # Lumagada 🇮🇩
 
-A modern Indonesian classifieds marketplace inspired by the concept of large regional marketplaces, with original Lumagada branding/UI.
+Lumagada is an Indonesian-first classifieds marketplace: **Cari. Jual. Ketemu.**
 
-## Run locally
-1. Install Node.js 20+.
-2. `npm install`
-3. Copy `.env.example` to `.env.local` and add Supabase URL + publishable key.
-4. Run `supabase/schema.sql` in Supabase SQL Editor.
-5. `npm run dev`
-6. Open http://localhost:3000
+## Preview locally
 
-## Deploy
-Deploy the repository to Vercel or another Next.js host. Add the two environment variables in the hosting dashboard, then connect `lumagada.com` in the host's Domains settings.
+Requirements: Node.js 20+
 
-## Included
-- Responsive marketplace homepage
-- Indonesian categories and location UI
-- Search/filter-like discovery
-- Listing detail pages
-- Sell/listing flow UI
-- Login/signup UI
-- Seller dashboard UI
-- Favorites UI
-- Chat UI
-- Supabase schema for profiles, listings, images, favorites, conversations, and messages
-- RLS policies for user-owned data
+```bash
+npm install
+npm run dev
+```
 
-## Production next steps
-Wire the sell form and auth forms to Supabase, add Storage upload, server-side listing queries, moderation/reporting, phone/WhatsApp verification, payment/escrow if desired, SEO metadata, analytics, rate limiting, and transactional email.
+Open `http://localhost:3000`.
+
+The demo works without environment variables and uses curated demo listings, so the UI can be previewed immediately.
+
+## Production deployment
+
+### Vercel
+
+Import `odhot/lumagada` into Vercel. The project is already configured as a standard Next.js app. Add these environment variables when Supabase is connected:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+
+### Supabase
+
+Run `supabase/schema.sql` in the Supabase SQL editor. The schema includes profiles, categories, listings, images, favorites, conversations, messages, and RLS policies.
+
+## Routes
+
+- `/` — marketplace homepage and search
+- `/listing/1` — listing detail demo
+- `/sell` — create-listing UI
+- `/login` — authentication UI
+- `/favorites` — saved listings
+- `/chat` — buyer/seller chat UI
+- `/dashboard` — seller dashboard
+- `/api/health` — deployment health check
+
+## Product direction
+
+The UX is inspired by familiar classifieds patterns but uses original Lumagada branding, copy, visual treatment, and Indonesian localization. It is designed to grow into a full marketplace with real authentication, image storage, listings, moderation, chat, verification, and payments.
