@@ -1,7 +1,7 @@
 create extension if not exists pgcrypto;
 create table if not exists profiles (id uuid primary key references auth.users(id) on delete cascade, display_name text not null default 'Pengguna Lumagada', phone text, city text, district text, avatar_url text, verified boolean not null default false, seller_type text not null default 'regular' check(seller_type in ('regular','pro')), seller_verified boolean not null default false, seller_document_type text, seller_document_number text, seller_business_name text, created_at timestamptz not null default now());
 create table if not exists categories (id uuid primary key default gen_random_uuid(), name text not null unique, slug text not null unique, icon text, created_at timestamptz not null default now());
-create table if not exists listings (id uuid primary key default gen_random_uuid(), seller_id uuid not null references profiles(id) on delete cascade, category_id uuid references categories(id), title text not null, description text not null default '', price bigint not null check(price>=0), condition text not null default 'Bekas', city text not null, district text, status text not null default 'active' check(status in ('active','expired','sold','hidden')), urgent boolean not null default false, is_pro_listing boolean not null default false, expires_at timestamptz not null default (now() + interval '7 days'), last_reup_at timestamptz, created_at timestamptz not null default now());
+create table if not exists listings (id uuid primary key default gen_random_uuid(), seller_id uuid not null references profiles(id) on delete cascade, category_id uuid references categories(id), title text not null, description text not null default '', price bigint not null check(price>=0), condition text not null default 'Bekas', city text not null, district text, status text not null default 'active' check(status in ('active','expired','sold','hidden')), urgent boolean not null default false, is_pro_listing boolean not null default false, expires_at timestamptz not null default (now() + interval '14 days'), last_reup_at timestamptz, created_at timestamptz not null default now());
 create table if not exists listing_images (id uuid primary key default gen_random_uuid(), listing_id uuid not null references listings(id) on delete cascade, url text not null, sort_order int not null default 0);
 create table if not exists favorites (user_id uuid not null references profiles(id) on delete cascade, listing_id uuid not null references listings(id) on delete cascade, created_at timestamptz not null default now(), primary key(user_id,listing_id));
 create table if not exists conversations (id uuid primary key default gen_random_uuid(), buyer_id uuid not null references profiles(id) on delete cascade, seller_id uuid not null references profiles(id) on delete cascade, listing_id uuid not null references listings(id) on delete cascade, created_at timestamptz not null default now());
@@ -15,17 +15,15 @@ alter table profiles add column if not exists seller_document_type text;
 alter table profiles add column if not exists seller_document_number text;
 alter table profiles add column if not exists seller_business_name text;
 alter table listings add column if not exists is_pro_listing boolean not null default false;
-alter table listings add column if not exists expires_at timestamptz not null default (now() + interval '7 days');
+alter table listings add column if not exists expires_at timestamptz not null default (now() + interval '14 days');
 alter table listings add column if not exists last_reup_at timestamptz;
 
 insert into categories(name,slug,icon) values ('Mobil','mobil','🚗'),('Motor','motor','🏍️'),('Properti','properti','🏠'),('Elektronik','elektronik','📱'),('Jasa & Lowongan','jasa','💼'),('Fashion','fashion','👕'),('Rumah & Perabot','rumah','🪑'),('Hobi & Koleksi','hobi','🎮'),('Hewan','hewan','🐱'),('Buku','buku','📚'),('Bisnis','bisnis','🏪'),('Lainnya','lainnya','📦') on conflict do nothing;
 alter table profiles enable row level security; alter table categories enable row level security; alter table listings enable row level security; alter table listing_images enable row level security; alter table favorites enable row level security; alter table conversations enable row level security; alter table messages enable row level security; alter table transactions enable row level security;
 
--- Regular listings are public for 7 days; Pro listings remain public until manually changed.
 drop policy if exists "public read active listings" on listings;
 create policy "public read active listings" on listings for select using((status='active' and (expires_at > now() or is_pro_listing=true)) or seller_id=auth.uid());
 
--- Existing policies are kept compatible with the original project.
 drop policy if exists "public read categories" on categories; create policy "public read categories" on categories for select using(true);
 drop policy if exists "seller insert listings" on listings; create policy "seller insert listings" on listings for insert with check(seller_id=auth.uid());
 drop policy if exists "seller update listings" on listings; create policy "seller update listings" on listings for update using(seller_id=auth.uid());
@@ -46,7 +44,7 @@ security invoker
 as $$
 declare result listings;
 begin
- update listings set status='active', expires_at=now()+interval '7 days', last_reup_at=now()
+ update listings set status='active', expires_at=now()+interval '14 days', last_reup_at=now()
  where id=p_listing_id and seller_id=auth.uid() and is_pro_listing=false
  returning * into result;
  return result;
