@@ -7,7 +7,8 @@ const RESTRICTED_SERVICE_TERMS = [
   'dokumen palsu', 'ijazah palsu', 'sertifikat palsu', 'identitas palsu',
   'rekening ilegal', 'jual rekening', 'rekening penampung', 'money mule',
   'pinjaman ilegal', 'pinjol ilegal', 'investasi bodong', 'skema ponzi',
-  'jual organ', 'perdagangan manusia', 'human trafficking'
+  'jual organ', 'perdagangan manusia', 'human trafficking',
+  'les private', 'les privat', 'guru privat', 'tutor privat', 'private tutoring'
 ];
 
 export const isRestrictedListing = (listing: { title?: string; description?: string; condition?: string; category?: string }) => {
