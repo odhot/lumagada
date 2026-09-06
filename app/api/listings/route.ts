@@ -2,44 +2,23 @@ import {NextResponse} from 'next/server';
 import {createClient} from '@/lib/supabase/server';
 import {isRestrictedListing,restrictedServiceMessage} from '@/lib/policy';
 
-const publicSelect='id,title,description,price,condition,city,district,latitude,longitude,contact_phone,status,urgent,is_pro_listing,accepts_offers,expires_at,created_at,listing_images(url,sort_order)';
+const publicSelect='id,title,description,price,condition,city,district,latitude,longitude,contact_phone,status,urgent,is_pro_listing,accepts_offers,expires_at,created_at,listing_images(url,sort_order),categories(name,slug)';
 
 export async function GET(request:Request){
- const supabase=await createClient();
- const u=new URL(request.url);
- const q=u.searchParams.get('q')?.trim()||'';
- const city=u.searchParams.get('city')?.trim()||'';
- const category=u.searchParams.get('category')?.trim()||'';
- const limit=Math.min(Math.max(Number(u.searchParams.get('limit')||24),1),100);
- const offset=Math.max(Number(u.searchParams.get('offset')||0),0);
+ const supabase=await createClient();const u=new URL(request.url);const q=u.searchParams.get('q')?.trim()||'';const city=u.searchParams.get('city')?.trim()||'';const category=u.searchParams.get('category')?.trim()||'';const limit=Math.min(Math.max(Number(u.searchParams.get('limit')||24),1),100);const offset=Math.max(Number(u.searchParams.get('offset')||0),0);
  let query=supabase.from('listings').select(publicSelect).eq('status','active').order('created_at',{ascending:false}).range(offset,offset+limit-1);
- if(q)query=query.textSearch('search_vector',q,{config:'simple',type:'websearch'});
- if(city)query=query.eq('city',city);
+ if(q)query=query.textSearch('search_vector',q,{config:'simple',type:'websearch'});if(city)query=query.eq('city',city);
  if(category){const {data:cat}=await supabase.from('categories').select('id').eq('name',category).maybeSingle();if(cat)query=query.eq('category_id',cat.id)}
- const {data,error}=await query;
- if(error)return NextResponse.json({error:error.message},{status:400});
- return NextResponse.json({data:data||[],pagination:{limit,offset,count:data?.length||0}});
+ const {data,error}=await query;if(error)return NextResponse.json({error:error.message},{status:400});
+ return NextResponse.json({data:(data||[]).map((x:any)=>({...x,category:x.categories?.name||'Lainnya',category_slug:x.categories?.slug||'lainnya'})),pagination:{limit,offset,count:data?.length||0}});
 }
 
 export async function POST(request:Request){
- const supabase=await createClient();
- const {data:{user}}=await supabase.auth.getUser();
- if(!user)return NextResponse.json({error:'Login diperlukan.'},{status:401});
+ const supabase=await createClient();const {data:{user}}=await supabase.auth.getUser();if(!user)return NextResponse.json({error:'Login diperlukan.'},{status:401});
  let body:any;try{body=await request.json()}catch{return NextResponse.json({error:'JSON tidak valid.'},{status:400})}
- const title=String(body.title||'').trim(),description=String(body.description||'').trim(),condition=String(body.condition||'Bekas'),category=String(body.category||''),city=String(body.city||'').trim(),phone=String(body.contact_phone||'').trim();
- const price=Number(body.price);
- if(!title||title.length>120||!city||!Number.isFinite(price)||price<0)return NextResponse.json({error:'Judul, lokasi, dan harga wajib diisi.'},{status:422});
- if(phone.replace(/\D/g,'').length<10)return NextResponse.json({error:'Nomor HP/WhatsApp yang valid wajib diisi.'},{status:422});
- if(isRestrictedListing({title,description,condition,category}))return NextResponse.json({error:restrictedServiceMessage},{status:422});
- const {data:profile}=await supabase.from('profiles').select('seller_type').eq('id',user.id).maybeSingle();
- const {data:cat}=await supabase.from('categories').select('id').eq('name',category).maybeSingle();
- const isPro=profile?.seller_type==='pro';
- const {data,error}=await supabase.from('listings').insert({
-  seller_id:user.id,category_id:cat?.id??null,title,description,condition,price,city,district:body.district||null,
-  latitude:body.latitude??null,longitude:body.longitude??null,contact_phone:phone,
-  accepts_offers:condition==='Lowongan'?false:body.accepts_offers!==false,
-  is_pro_listing:isPro,status:'active',expires_at:isPro?new Date(Date.now()+3650*24*60*60*1000).toISOString():undefined
- }).select('id,expires_at,is_pro_listing').single();
- if(error)return NextResponse.json({error:error.message},{status:400});
- return NextResponse.json({data},{status:201});
+ const title=String(body.title||'').trim(),description=String(body.description||'').trim(),condition=String(body.condition||'Bekas'),category=String(body.category||''),city=String(body.city||'').trim(),phone=String(body.contact_phone||'').trim();const price=Number(body.price);
+ if(!title||title.length>120||!city||!Number.isFinite(price)||price<0)return NextResponse.json({error:'Judul, lokasi, dan harga wajib diisi.'},{status:422});if(phone.replace(/\D/g,'').length<10)return NextResponse.json({error:'Nomor HP/WhatsApp yang valid wajib diisi.'},{status:422});if(isRestrictedListing({title,description,condition,category}))return NextResponse.json({error:restrictedServiceMessage},{status:422});
+ const {data:profile}=await supabase.from('profiles').select('seller_type').eq('id',user.id).maybeSingle();const {data:cat}=await supabase.from('categories').select('id').eq('name',category).maybeSingle();const isPro=profile?.seller_type==='pro';
+ const {data,error}=await supabase.from('listings').insert({seller_id:user.id,category_id:cat?.id??null,title,description,condition,price,city,district:body.district||null,latitude:body.latitude??null,longitude:body.longitude??null,contact_phone:phone,accepts_offers:condition==='Lowongan'?false:body.accepts_offers!==false,is_pro_listing:isPro,status:'active',...(isPro?{expires_at:new Date(Date.now()+3650*24*60*60*1000).toISOString()}: {})}).select('id,expires_at,is_pro_listing').single();
+ if(error)return NextResponse.json({error:error.message},{status:400});return NextResponse.json({data},{status:201});
 }
