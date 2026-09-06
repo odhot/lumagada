@@ -100,7 +100,7 @@ drop policy if exists "notifications own update" on notifications; create policy
 drop policy if exists "transactions participants read" on transactions; create policy "transactions participants read" on transactions for select using(buyer_id=auth.uid() or seller_id=auth.uid());
 drop policy if exists "rewards own read" on sponsor_reward_events; create policy "rewards own read" on sponsor_reward_events for select using(user_id=auth.uid());
 
-insert into storage.buckets(id,name,public) values('listing-images','listing-images',true) on conflict(id) do update set public=true;
+insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types) values('listing-images','listing-images',true,10485760,array['image/jpeg','image/png','image/webp']) on conflict(id) do update set public=true,file_size_limit=10485760,allowed_mime_types=array['image/jpeg','image/png','image/webp'];
 drop policy if exists "listing photos public read" on storage.objects; create policy "listing photos public read" on storage.objects for select using(bucket_id='listing-images');
 drop policy if exists "listing photos authenticated upload" on storage.objects; create policy "listing photos authenticated upload" on storage.objects for insert to authenticated with check(bucket_id='listing-images' and(storage.foldername(name))[1]=auth.uid()::text);
 drop policy if exists "listing photos owner update" on storage.objects; create policy "listing photos owner update" on storage.objects for update to authenticated using(bucket_id='listing-images' and(storage.foldername(name))[1]=auth.uid()::text) with check(bucket_id='listing-images' and(storage.foldername(name))[1]=auth.uid()::text);
